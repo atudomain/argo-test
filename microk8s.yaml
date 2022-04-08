@@ -24,3 +24,10 @@
       register: cmd_res
       retries: 60
       until: "'microk8s is running' in cmd_res.stdout_lines"
+    - name: Enable essential addons
+      ansible.builtin.shell: |
+        microk8s enable dns helm3
+    - name: Install argocd with helm
+      ansible.builtin.shell: |
+        microk8s.helm3 repo add argo https://argoproj.github.io/argo-helm
+        microk8s.helm3 install my-release argo/argo-cd || true
