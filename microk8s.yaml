@@ -1,0 +1,26 @@
+---
+
+- name: Install microk8s with argocd
+  hosts: all
+  become: true
+  tasks:
+    - name: Install microk8s
+      snap:
+        name: microk8s
+        classic: yes
+    - name: Add user to microk8s group
+      ansible.builtin.user:
+        name: ubuntu 
+        groups: microk8s
+        append: yes
+    - name: Change ownership of kube config
+      file: 
+        dest: /home/ubuntu/.kube
+        owner: ubuntu 
+        group: ubuntu 
+        recurse: yes
+    - name: Wait for microk8s ready
+      command: microk8s status
+      register: cmd_res
+      retries: 60
+      until: "'microk8s is running' in cmd_res.stdout_lines"
