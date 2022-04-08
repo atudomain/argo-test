@@ -1,0 +1,19 @@
+
+---
+
+- name: Set static ip on 2nd interface
+  hosts: all
+  become: true
+  vars:
+    server_number: 99
+  tasks:
+    - name: Configure static networking
+      template:
+        src: template-00-installer-config.yaml
+        dest: /etc/netplan/00-installer-config.yaml
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Apply configuration
+      ansible.builtin.shell: |
+        netplan apply
